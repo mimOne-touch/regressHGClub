@@ -14,7 +14,7 @@ namespace RegressOneTouch
         private static int wait_time; // кол-во секунд для ожидания элемента на странице
         private static int sleeper; // Доп переменная, регулирует скорость работы тестов
         private static ChromeDriver Chrome; // Тест тестовый 
-        private static TestHelper TH;
+        private static TestHelper TH; // тестовая ветка
 
         [ClassInitialize]
         public static void InitializeClass(TestContext testContext) // 
