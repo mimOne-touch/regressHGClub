@@ -32,6 +32,19 @@ namespace RegressOneTouch
         }
 
         [TestMethod]
+        public void testTest()
+        {
+            try
+            {
+                Console.WriteLine("Ага, вот и я");
+            }
+            catch
+            {
+                Console.WriteLine("Не верный вывод в консоль");
+            }
+        }
+        
+        [TestMethod]
         public void BasketDropAddress() //Дефект https://trello.com/c/qAUpb8lF  https://trello.com/c/uXB5dnxr
         {
             // Открываем страницу
