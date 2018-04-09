@@ -41,6 +41,7 @@ namespace RegressOneTouch
             catch
             {
                 Console.WriteLine("Не верный вывод в консоль");
+                // ЫЫЫ
             }
         }
         
