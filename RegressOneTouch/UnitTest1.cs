@@ -14,37 +14,23 @@ namespace RegressOneTouch
         static string baseURL;
         private static int wait_time; // кол-во секунд для ожидания элемента на странице
         private static int sleeper; // Доп переменная, регулирует скорость работы тестов
-        private static ChromeDriver Chrome; // Тест тестовый 
-        private static TestHelper TH; // тестовая ветка
+        private static ChromeDriver Chrome; //
+        private static TestHelper TH; //
 
         [ClassInitialize]
         public static void InitializeClass(TestContext testContext) // 
         {
-            //baseURL = "http://hgclub.site.dev.one-touch.ru/";
+            baseURL = "http://hgclub.site.dev.one-touch.ru/";
             //baseURL = "http://hgclub.lsp.dev.one-touch.ru/catalog/";
             //baseURL = "http://hgclub.test.dev.one-touch.ru/catalog/";
-            baseURL = "https://hgclub.ru/";
+            //baseURL = "https://hgclub.ru/";
             wait_time = 5;
             TimeSpan interval = new TimeSpan(0, 0, wait_time);            
             sleeper = 1500;
             Chrome = new ChromeDriver();
             Chrome.Manage().Timeouts().ImplicitlyWait(interval);
             TH = new TestHelper();
-        }
-
-        [TestMethod]
-        public void testTest()
-        {
-            try
-            {
-                Console.WriteLine("Ага, вот и я");
-            }
-            catch
-            {
-                Console.WriteLine("Не верный вывод в консоль");
-                // ЫЫЫ
-            }
-        }
+        }       
         
         [TestMethod]
         public void BasketDropAddress() //Дефект https://trello.com/c/qAUpb8lF  https://trello.com/c/uXB5dnxr
@@ -267,7 +253,7 @@ namespace RegressOneTouch
             try
             {   //Жмем сохранить 
                 Chrome.FindElements(By.CssSelector(".col-md-6 .btn-dark"))[1].Click();
-                if (Chrome.FindElements(By.CssSelector(".col-md-10 .col-md-6 .form-control"))[0].Text == "")
+                if (!Chrome.FindElement(By.XPath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/form/section/div[1]/div[6]/div/div[1]/text()[1]")).Text.Contains("Длина пароля должна быть не менее 5 и не более 10 символов"))
                 {
                     Console.WriteLine("Баг повторился, регресс \nДефект: https://trello.com/c/qrWe9co3"); // пароль принят
                     // Восстанавливаем пароль на дефолтный "qwerty"
@@ -320,25 +306,35 @@ namespace RegressOneTouch
                 Console.WriteLine("Не корректное заполнение e-mail");
                 Assert.IsTrue(false);
             }
-            try
-            {
-                //Жмем сохранить 
-                Chrome.FindElements(By.CssSelector(".col-md-6 .btn-dark"))[1].Click();
-                if (Chrome.FindElement(By.ClassName("error_hidden")).Text != "Введите")
+            //Жмем сохранить 
+            Chrome.FindElements(By.CssSelector(".col-md-6 .btn-dark"))[1].Click();
+            if (Chrome.FindElements(By.ClassName("auth__block-error")).Count >1)
+            { 
+                if (Chrome.FindElements(By.ClassName("auth__block-error"))[1].Text.Contains("E-mail указан неверно"))
                 {
-                    Console.WriteLine("Баг повторился, регресс \nДефект: https://trello.com/c/mfJP8BaV");
+                    Console.WriteLine("Баг не повторился");
+                }
+                else
+                if (Chrome.FindElements(By.ClassName("auth__block-error"))[1].Text.Contains("E-mail уже использовался ранее"))
+                {
+                    Console.WriteLine("E-mail посчитался введенным ранее \nДефект: https://trello.com/c/mfJP8BaV");
                     Assert.IsTrue(false);
                 }
                 else
                 {
-                    Console.WriteLine("Баг не повторился");
+                    Console.WriteLine("Баг повторился, регресс \nДефект: https://trello.com/c/mfJP8BaV");
+                    Assert.IsTrue(false);
                 }
             }
-            catch
+            else
             {
+                Console.WriteLine("Баг повторился, регресс \nДефект: https://trello.com/c/mfJP8BaV");
                 Assert.IsTrue(false);
             }
+
         }
+            
+        
 
         [TestMethod]
         public void TipForPoints()  // Дефект https://trello.com/c/joiW3mcq
@@ -459,13 +455,17 @@ namespace RegressOneTouch
         [DataRow("te s t")]  // Тест с пробелами
         [DataRow("testtesttes")]// Тест на 11 символов
         [DataRow("кириллица")]  // Тест на кириллицу
-        [DataRow("$%)(|}{![]")]  // Cимволы
         public void RegistrationPasswordTest(string pass)  // Дефект https://trello.com/c/zxwOXLc2
         {
             try
             {   // Инициализируем
                 TH.DefaultStation(Chrome, baseURL);
+                if (Chrome.FindElement(By.CssSelector(".header-auth .b")).Text != "Вход")
+                {
+                    Chrome.FindElement(By.CssSelector(".header-logout")).Click();
+                }
                 Console.WriteLine("Корректная инициализация драйвера");
+                
             }
             catch
             {
@@ -499,18 +499,18 @@ namespace RegressOneTouch
             {
                 Chrome.FindElement(By.CssSelector(".js-sms-confirm .text-uppercase")).Click();
                 System.Threading.Thread.Sleep(sleeper);
-                if (Chrome.FindElement(By.CssSelector(".form-error .mb5")).Text.Contains("Длина пароля должна быть не менее 5 и не более 10 символов"))
-                {
-                    Console.WriteLine("Контроль корректно сработал со значением \""+ pass+"\"");
-                }  
-                else
-                if (Chrome.FindElement(By.CssSelector(".form-error .mb5")).Text.Contains("Использование русских букв недопустимо"))
+                if (Chrome.FindElement(By.XPath("//*[@id='fancybox-container-1']/div[2]/div[4]/div/div/div[2]/div/div/div/div[2]/div[2]/div/form/div[1]/div[2]")).Text.Contains("Длина пароля должна быть не менее 5 и не более 10 символов"))
                 {
                     Console.WriteLine("Контроль корректно сработал со значением \"" + pass + "\"");
                 }
                 else
+                if (Chrome.FindElement(By.XPath("//*[@id='fancybox-container-1']/div[2]/div[4]/div/div/div[2]/div/div/div/div[2]/div[2]/div/form/div[1]/div[2]")).Text.Contains("Использование русских букв недопустимо"))
                 {
-                    Assert.IsTrue(false);
+                    Console.WriteLine("Контроль корректно сработал со значением \"" + pass + "\"");
+                }
+                if (Chrome.FindElement(By.XPath("//*[@id='fancybox-container-1']/div[2]/div[4]/div/div/div[2]/div/div/div/div[2]/div[2]/div/form/div[1]/div[2]")).Text.Contains("Использование пробелов в пароле недопустимо"))
+                {
+                    Console.WriteLine("Контроль корректно сработал со значением \"" + pass + "\"");
                 }
             }
             catch
@@ -545,6 +545,10 @@ namespace RegressOneTouch
             try
             {   // Инициализируем
                 TH.DefaultStation(Chrome, baseURL);
+                if (Chrome.FindElement(By.CssSelector(".header-auth .b")).Text != "Вход")
+                {
+                    Chrome.FindElement(By.CssSelector(".header-logout")).Click();
+                }
                 Console.WriteLine("Корректная инициализация драйвера");
             }
             catch
@@ -602,7 +606,7 @@ namespace RegressOneTouch
             }
         }
         
-        [TestMethod]
+        //[TestMethod]
         public void CloseRegistrationPopap() // Доделать 
 
         {
