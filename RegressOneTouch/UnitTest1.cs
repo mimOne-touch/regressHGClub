@@ -9,8 +9,7 @@ namespace RegressOneTouch
 {
     [TestClass]
     public class UnitTest1
-    {
-        // Это еще один коммент
+    {   // Это еще один коммент
         static string baseURL;
         private static int wait_time; // кол-во секунд для ожидания элемента на странице
         private static int sleeper; // Доп переменная, регулирует скорость работы тестов

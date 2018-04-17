@@ -80,7 +80,7 @@ namespace RegressOneTouch
             Chrome.FindElements(By.CssSelector(".btn-sm"))[0].Click();
         }
 
-        public bool AddToBasket(IWebDriver Chrome) // Добавляет случайный товар в корзину         
+        public bool AddToBasket(IWebDriver Chrome) // Добавляет случайный товар в корзину 
         {
             Chrome.Navigate().Refresh();
             bool result = false;
